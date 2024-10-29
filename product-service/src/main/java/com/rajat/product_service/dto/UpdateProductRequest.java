@@ -1,21 +1,18 @@
 package com.rajat.product_service.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class UpdateProductRequest {
-    private String id;
+    @NotNull(message = "Product ID must not be null")
+    private UUID id;
     private String name;
     private String brand;
-    private String description;
     private String category;
-    private Map<String, String> attributes;
+    private String description;
+    private Set<UpdateAttributesRequest> attributes;
 }

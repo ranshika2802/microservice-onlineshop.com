@@ -1,0 +1,14 @@
+{
+  "realm": "online-shop",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "api-gateway",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": ["*"],
+      "directAccessGrantsEnabled": true,
+      "protocol": "openid-connect"
+    }
+  ]
+}

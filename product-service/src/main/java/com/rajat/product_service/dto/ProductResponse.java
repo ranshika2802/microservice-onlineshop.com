@@ -1,21 +1,16 @@
 package com.rajat.product_service.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.Map;
+import java.util.List;
+import java.util.UUID;
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class ProductResponse {
-    private String id;
+    private UUID id;
     private String name;
     private String brand;
+    private CategoryResponse category;
     private String description;
-    private String category;
-    private Map<String, String> attributes;
+    private List<AttributeResponse> attributes;
 }

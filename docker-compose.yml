@@ -1,0 +1,160 @@
+networks:
+  online-shop-network:
+    driver: bridge
+services:
+  keycloak-mysql:
+    container_name: keycloak-mysql
+    image: mysql:8
+    volumes:
+      - ./volume-data/mysql_keycloak_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: password
+    networks:
+      - online-shop-network
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:26.0.1
+    command:
+      - "start-dev"
+      - "--import-realm"
+    environment:
+      TZ: Asia/Kolkata  # Added timezone configuration
+      DB_VENDOR: MYSQL
+      DB_ADDR: keycloak-mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./docker/keycloak/realm/:/opt/keycloak/data/import/
+      - ./online-shop-realm.json:/opt/keycloak/data/import/online-shop-realm.json
+    depends_on:
+      - keycloak-mysql
+    networks:
+      - online-shop-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Eureka - lets services find each other -> Spring boot eureka server image
+  eureka:
+    image: steeltoeoss/eureka-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    networks:
+      - online-shop-network
+
+  # API Gateway - handles incoming requests and routes them
+  api-gateway:
+    image: api-gateway:0.0.1  # Replace with the actual image name
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080/auth
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    networks:
+      - online-shop-network
+
+  # Admin Service
+  admin-service:
+    image: admin-service:0.0.1  # Replace with the actual image name
+    container_name: admin-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+    networks:
+      - online-shop-network
+  # Customer Service
+  customer-service:
+    image: customer-service:0.0.1
+    container_name: customer-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - REDIS_HOST=redis
+    networks:
+      - online-shop-network
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/customerdb
+
+  # Product Service
+  product-service:
+    image: product-service:0.0.1
+    container_name: product-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://junction.proxy.rlwy.net:32362/railway
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=FIvaNkrWMKzmYFURzcnlxYxzhtWhWKhe
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+    networks:
+      - online-shop-network
+  # Inventory Service
+  inventory-service:
+    image: inventory-service:0.0.1
+    container_name: inventory-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://junction.proxy.rlwy.net:32362/railway
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=FIvaNkrWMKzmYFURzcnlxYxzhtWhWKhe
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+    networks:
+      - online-shop-network
+  # Price Service
+  price-service:
+    image: price-service:0.0.1
+    container_name: price-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://junction.proxy.rlwy.net:32362/railway
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=FIvaNkrWMKzmYFURzcnlxYxzhtWhWKhe
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+    networks:
+      - online-shop-network
+  # Zipkin - for tracing actions and seeing how each service talks to others
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - online-shop-network
+
+  # Redis - a cache storage
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - online-shop-network
+
+  # PostgreSQL Database
+#  postgres:
+#    image: postgres
+#    container_name: postgres
+#    environment:
+#      - POSTGRES_USER=admin
+#      - POSTGRES_PASSWORD=password
+#      - POSTGRES_DB=maindb
+#    ports:
+#      - "5432:5432"

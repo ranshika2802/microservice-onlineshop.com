@@ -1,7 +1,62 @@
 spring:
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/product-service
+  application:
+    name: product-service
 server:
-  port: 8081
+  port: 0
+#  port: 9091
+logging:
+  pattern:
+    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
+  level:
+    root: info
+    com.rajat.product_service: DEBUG
+    io.micrometer.tracing: DEBUG
+    org.springframework.boot.actuate.autoconfigure.tracing: DEBUG
+
+
+Spring:
+  datasource:
+    url: jdbc:postgresql://junction.proxy.rlwy.net:32362/railway
+    username: postgres
+    password: FIvaNkrWMKzmYFURzcnlxYxzhtWhWKhe
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true       # Show SQL queries in the console
+    properties:
+      hibernate:
+        format_sql: true  # Pretty print SQL queries
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: http://discovery-server:8761/eureka/
+#
+  #      defaultZone: http://192.168.29.249:8761/eureka/
+  instance:
+    secure-port-enabled: false
+    prefer-ip-address: true
+#    hostname: localhost
+
+#actuator and zipkin
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+  endpoint:
+    health:
+      show-details: always
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
 

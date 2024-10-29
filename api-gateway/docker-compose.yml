@@ -1,0 +1,65 @@
+networks:
+  online-shop-network:
+    driver: bridge
+
+services:
+  keycloak-mysql:
+    container_name: keycloak-mysql
+    image: mysql:8
+    volumes:
+      - ./volume-data/mysql_keycloak_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: password
+    networks:
+      - online-shop-network
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:26.0.1
+    command:
+      - "start-dev"
+      - "--import-realm"
+    environment:
+      TZ: Asia/Kolkata  # Added timezone configuration
+      DB_VENDOR: MYSQL
+      DB_ADDR: keycloak-mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8085:8080"
+    volumes:
+      - ./docker/keycloak/realm/:/opt/keycloak/data/import/
+    depends_on:
+      - keycloak-mysql
+    networks:
+      - online-shop-network
+
+#  redis_cache:
+#    container_name: redis_cache
+#    image: redis:latest
+#    ports:
+#      - "6379:6379"
+#    networks:
+#      - online-shop-network
+#
+#  eureka:
+#    container_name: eureka
+#    image: steeltoeoss/eureka-server
+#    ports:
+#      - "8761:8761"
+#    networks:
+#      - online-shop-network
+#
+#  zipkin:
+#    container_name: zipkin
+#    image: openzipkin/zipkin-slim
+#    ports:
+#      - "9411:9411"
+#    networks:
+#      - online-shop-network
