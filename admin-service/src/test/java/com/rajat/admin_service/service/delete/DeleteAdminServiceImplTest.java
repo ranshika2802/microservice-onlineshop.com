@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteAdminServiceImplTest {
+public class DeleteAdminServiceImplTest {
 
   @Mock private ModelMapper modelMapper;
 

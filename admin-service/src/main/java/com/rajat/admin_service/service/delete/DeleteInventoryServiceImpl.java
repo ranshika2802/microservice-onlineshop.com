@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DeleteInventoryServiceImpl implements DeleteInventoryService {
 
-    private final PriceClient priceClient;
     private final InventoryClient inventoryClient;
 
     @Override
