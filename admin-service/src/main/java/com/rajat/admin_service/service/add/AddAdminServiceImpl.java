@@ -14,6 +14,8 @@ import com.rajat.admin_service.model.product.response.AddProductClientResponse;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+
+import io.micrometer.observation.annotation.Observed;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ public class AddAdminServiceImpl implements AddAdminService {
   private final AddPriceService addPriceService;
   private final AddInventoryService addInventoryService;
 
+  @Observed(name = "add.products")
   @Override
   public Set<AddProductDetailsResponseDto> addProductsDetails(
       @NonNull Set<AddProductDetailsDto> productDetails) {

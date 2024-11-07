@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class GlobalEceptionHandler {
+public class GlobalExceptionHandler {
 
   @ExceptionHandler(FeignException.NotFound.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)

@@ -49,12 +49,15 @@ management:
       exposure:
         include:
           - health
+          - info
+          - metrics
+          - tracing
   endpoint:
     health:
       show-details: always
   zipkin:
     tracing:
-      endpoint: http://zipkin:9411/api/v2/spans
+      endpoint: http://zipkin-all-in-one:9411/api/v2/spans
   tracing:
     enabled: true
     sampling:

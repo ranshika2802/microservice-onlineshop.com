@@ -6,6 +6,7 @@ import com.rajat.admin_service.model.inventory.ApiInventoryClientResponse;
 import com.rajat.admin_service.model.price.ApiPriceClientResponse;
 import com.rajat.admin_service.model.product.ApiProductClientResponse;
 import com.rajat.admin_service.util.AdminUtils;
+
 import java.util.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class ViewAdminServiceImpl implements ViewAdminService {
   private final ViewPriceService viewPriceService;
   private final ViewInventoryService viewInventoryService;
 
+//  @Observed(name = "view.products")
   @Override
   public ApiResponse viewProductsDetailsByCategory(@NonNull final Set<String> categories) {
 
@@ -28,7 +30,12 @@ public class ViewAdminServiceImpl implements ViewAdminService {
         viewProductService.viewProductsByCategory(categories);
     if (Objects.isNull(productClientResponse) || !productClientResponse.isSuccess()) {
       return new ApiResponse(
-          productClientResponse.isSuccess(), Set.of(productClientResponse.getMessage()), null);
+              false,
+              Set.of(
+                      productClientResponse != null
+                              ? productClientResponse.getMessage()
+                              : "Product service failure"),
+              null);
     }
     Map<UUID, ViewProductDetailsResponseDto> productIdToProductMap =
         adminUtils.prepareProductIdToProductMap(
@@ -43,7 +50,12 @@ public class ViewAdminServiceImpl implements ViewAdminService {
       priceClientResponse = viewPriceService.viewPriceByProductId(productIds);
       if (Objects.isNull(priceClientResponse) || !priceClientResponse.isSuccess()) {
         return new ApiResponse(
-            priceClientResponse.isSuccess(), Set.of(priceClientResponse.getMessage()), null);
+            false,
+            Set.of(
+                priceClientResponse != null
+                    ? priceClientResponse.getMessage()
+                    : "Price service failure"),
+            null);
       }
       if (Objects.nonNull(priceClientResponse.getViewProductPriceClientResponses())) {
         priceClientResponse
@@ -62,8 +74,11 @@ public class ViewAdminServiceImpl implements ViewAdminService {
       inventoryClientResponse = viewInventoryService.viewInventoryByProductId(productIds);
       if (Objects.isNull(inventoryClientResponse) || !inventoryClientResponse.isSuccess()) {
         return new ApiResponse(
-            inventoryClientResponse.isSuccess(),
-            Set.of(inventoryClientResponse.getMessage()),
+            false,
+            Set.of(
+                inventoryClientResponse != null
+                    ? inventoryClientResponse.getMessage()
+                    : "Inventory service failure"),
             null);
       }
       if (Objects.nonNull(inventoryClientResponse.getViewProductInventoryClientResponses())) {

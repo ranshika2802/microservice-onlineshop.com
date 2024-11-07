@@ -1,10 +1,6 @@
 package com.rajat.admin_service.dto.request.add;
 
-import io.swagger.v3.oas.annotations.Hidden;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
@@ -19,6 +15,6 @@ public class AddPriceDto {
       integer = Integer.MAX_VALUE,
       fraction = 2,
       message = "Amount must be a valid number with up to 2 decimal places.")
-  @Positive(message = "Amount must be positive")
+  @PositiveOrZero(message = "Admin Reject ->Amount must not be negative.")
   private Float amount;
 }

@@ -1,0 +1,4 @@
+logging:
+  level:
+    root: INFO
+  config: classpath:logback-test.xml

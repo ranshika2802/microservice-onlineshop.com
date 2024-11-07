@@ -9,9 +9,7 @@ import feign.RetryableException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import java.net.SocketTimeoutException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +34,12 @@ public class ViewServiceImpl implements ViewService {
     log.info("Retry count = {}", counter++);
     ApiClientResponse apiClientResponse =
         viewClient.viewProductsDetailsByCategory(uncachedCategories);
-    if (!apiClientResponse.isSuccess()) {
-      String key = apiClientResponse.getMessage().stream().findFirst().orElse("NaN");
+    if (Objects.isNull(apiClientResponse) || !apiClientResponse.isSuccess()) {
+      String key =
+          Optional.ofNullable(apiClientResponse)
+              .flatMap(response -> response.getMessage().stream().findFirst())
+              .filter(message -> !message.isBlank())
+              .orElse("NaN");
       Map NanToNull = new HashMap<>();
       NanToNull.put(key, null);
       return NanToNull;

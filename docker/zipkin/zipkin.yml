@@ -1,0 +1,12 @@
+server:
+  http_listen_port: 9411
+
+distributor:
+  receivers:
+    zipkin:
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /tmp/zipkin/blocks

@@ -29,8 +29,25 @@
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2023.0.3</spring-cloud.version>
+<!--        <logbackVersion>1.4.8</logbackVersion>-->
+        <loki-logback.version>1.4.1</loki-logback.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.loki4j</groupId>
+            <artifactId>loki-logback-appender</artifactId>
+            <version>${loki-logback.version}</version>
+            <scope>runtime</scope>
+        </dependency>
         <!-- Springdoc OpenAPI for Swagger UI -->
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -124,6 +141,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!--<dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logbackVersion}</version>
+            </dependency>-->
         </dependencies>
     </dependencyManagement>
 

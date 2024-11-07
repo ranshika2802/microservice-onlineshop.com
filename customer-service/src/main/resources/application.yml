@@ -19,6 +19,8 @@ server:
 logging:
   pattern:
     level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
+
+  #    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
   level:
     root: info
     io.micrometer.tracing: DEBUG
@@ -37,13 +39,16 @@ management:
       exposure:
         include:
           - health
+          - info
+          - metrics
+          - tracing
   endpoint:
     health:
       show-details: always
   #zipkin
   zipkin:
     tracing:
-      endpoint: http://zipkin:9411/api/v2/spans
+      endpoint: http://zipkin-all-in-one:9411/api/v2/spans
   tracing:
     enabled: true
     sampling:

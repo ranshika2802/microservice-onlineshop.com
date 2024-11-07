@@ -1,9 +1,12 @@
+server:
+  port: 8080
 spring:
   application:
     name: api-gateway
   main:
     allow-bean-definition-overriding: true
-    web-application-type: reactive
+    web-application-type: REACTIVE
+
   cloud:
     loadbalancer:
       retry:
@@ -56,30 +59,50 @@ spring:
           jwk-set-uri: http://keycloak:8080/realms/online-shop/protocol/openid-connect/certs
 eureka:
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
       defaultZone: http://discovery-server:8761/eureka/
-    fetch-registry: true
-    register-with-eureka: true
   instance:
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 30
 
 logging:
-#  pattern:
-#    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
-#    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %5p [%X{traceId:-},%X{spanId:-},${spring.application.name}] [%thread] %logger{36} - %msg%n"
+  pattern:
+    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
   level:
-    zipkin2.reporter: INFO
-    io.micrometer.tracing: INFO  # Enable debug logging for tracing
-    org.springframework.boot.actuate.autoconfigure.tracing: INFO
-    root: info
-    org.springframework.cloud: info
+    root: INFO
+    zipkin2.reporter: DEBUG
+    io.micrometer.tracing: DEBUG  # Enable debug logging for tracing
+    org.springframework.boot.actuate.autoconfigure.tracing: DEBUG
+    com.example: DEBUG
+    org.springframework.cloud: INFO
     org.springframework.cloud.gateway: TRACE
-    org.springframework.web: info
-#    org.springframework.web.security: DEBUG
-server:
-  port: 8080
+    org.springframework.web: INFO
+  #    org.springframework.web.security: DEBUG
+  #  pattern:
+  #    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
+
+  #    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
+  #  logback:
+  #    appender:
+  #      loki:
+  #        class: com.github.loki4j.logback.Loki4jAppender
+  #        name: LOKI
+  #        endpoint: http://loki:3100/loki/api/v1/push
+  #        logEvents: INFO,ERROR,WARN,DEBUG
+  #        batchSize: 100
+  #        batchTimeMs: 5000
+  #    root:
+  #      level: INFO
+  #      appender-ref:
+  #        - ref: CONSOLE
+  #        - ref: LOKI
+  #    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "
+  #    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
+  include-application-name: false
+
 
 
 keycloak:
@@ -92,9 +115,35 @@ keycloak:
 
 #zipkin
 management:
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: always
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            request: true
+  observations:
+    key-values:
+      application: api-gateway
   zipkin:
     tracing:
-      endpoint: http://zipkin:9411/api/v2/spans
+      endpoint: http://zipkin-all-in-one:9411/api/v2/spans
   tracing:
     enabled: true
     sampling:

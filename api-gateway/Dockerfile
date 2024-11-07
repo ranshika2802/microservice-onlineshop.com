@@ -4,6 +4,9 @@ FROM amazoncorretto:17.0.13
 # Set the working directory in the container
 WORKDIR /app
 
+COPY wait-for-it.sh /wait-for-it.sh
+ENTRYPOINT ["/wait-for-it.sh", "keycloak:8080", "--", "java", "-jar", "api-gateway.jar"]
+
 # Copy the Maven/Gradle build artifact (JAR file) into the container
 COPY target/api-gateway-0.0.1-SNAPSHOT.jar app.jar
 

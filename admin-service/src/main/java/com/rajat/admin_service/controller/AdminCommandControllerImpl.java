@@ -30,13 +30,13 @@ public class AdminCommandControllerImpl implements AdminCommandController {
 
   @Override
   public Set<AddProductDetailsResponseDto> addProductsDetails(
-      @NonNull Set<AddProductDetailsDto> productDetails) {
+      @Valid @NonNull Set<AddProductDetailsDto> productDetails) {
     return addAdminService.addProductsDetails(productDetails);
   }
 
   @Override
   public Set<UpdateProductDetailsResponseDto> updateProductsDetails(
-          @Valid @NonNull Set<UpdateProductDetailsDto> updateProductRequests) {
+      @Valid @NonNull Set<UpdateProductDetailsDto> updateProductRequests) {
     return updateAdminService.updateProductsDetails(updateProductRequests);
   }
 

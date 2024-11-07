@@ -7,7 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableWebSecurity
+//@EnableWebSecurity
 public class ApiGatewayApplication {
 
 	public static void main(String[] args) {
