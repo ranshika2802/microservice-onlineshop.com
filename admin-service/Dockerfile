@@ -20,15 +20,13 @@ WORKDIR /app
 #ENV OTEL_INSTRUMENTATION_OKHTTP_ENABLED=false
 #ENV OTEL_INSTRUMENTATION_SPRING_REST_TEMPLATE_ENABLED=false
 
-
-
-# Copy the Maven build artifact (JAR file) into the container
-COPY target/admin-service-0.0.2-SNAPSHOT.jar app.jar
-
 # Expose a random port (replace <port> with the actual application port)
 #EXPOSE 9093
 
 
-# Run the application
 #ENTRYPOINT java -javaagent:/opentelemetry-javaagent.jar -jar /app.jar
+# Copy the Maven build artifact (JAR file) into the container
+COPY target/admin-service-0.0.2-SNAPSHOT.jar app.jar
+
+# Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]

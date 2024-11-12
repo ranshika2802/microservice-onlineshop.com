@@ -250,7 +250,7 @@ services:
 
   # API Gateway - handles incoming requests and routes them
   api-gateway:
-    image: api-gateway:0.0.1  # Replace with the actual image name
+    image: api-gateway:0.0.2  # Replace with the actual image name
     container_name: api-gateway
     ports:
       - "8080:8080"

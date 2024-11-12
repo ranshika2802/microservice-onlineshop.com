@@ -110,7 +110,7 @@ keycloak:
   realm: online-shop
   resource: api-gateway
   credentials:
-    secret: Clw1mu6bHKVCttQs0IwNZJ0DngXRRgHQ
+    secret: UL0vFHKmOQM9lRUEU8WPv7tesMm2c0NL
   use-resource-role-mappings: true
 
 #zipkin

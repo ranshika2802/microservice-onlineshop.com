@@ -1,17 +1,14 @@
 # Use Amazon Corretto as the base image
 FROM amazoncorretto:17.0.13
 
-# Set the working directory in the container
+# Set the working directory and copy files in one step
 WORKDIR /app
-
-COPY wait-for-it.sh /wait-for-it.sh
-ENTRYPOINT ["/wait-for-it.sh", "keycloak:8080", "--", "java", "-jar", "api-gateway.jar"]
-
-# Copy the Maven/Gradle build artifact (JAR file) into the container
+COPY wait-for-it.sh ./
 COPY target/api-gateway-0.0.1-SNAPSHOT.jar app.jar
 
-# Expose a random port (replace <port> with the actual application port)
+# Expose the port the application will listen on
 EXPOSE 8080
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Ensure the wait-for-it.sh script is executable and run the application with a single ENTRYPOINT
+RUN chmod +x /app/wait-for-it.sh
+ENTRYPOINT ["/app/wait-for-it.sh", "keycloak:8080", "--", "java", "-jar", "/app/app.jar"]
